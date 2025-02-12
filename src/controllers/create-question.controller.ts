@@ -1,8 +1,7 @@
-import { Body, Controller, HttpCode, Post, UnauthorizedException, UsePipes, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpCode, Post, UseGuards } from "@nestjs/common";
 import { z } from "zod";
 import { ZodValidationPipe } from "src/pipes/zod-validation-pipe";
 import { JwtService } from "@nestjs/jwt";
-import { compare } from "bcryptjs";
 import { PrismaService } from "src/prisma/prisma.service";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { CurrentUser } from "src/auth/current-user-decorator";
