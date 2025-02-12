@@ -5,6 +5,8 @@ import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcryptjs";
 import { PrismaService } from "src/prisma/prisma.service";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { CurrentUser } from "src/auth/current-user-decorator";
+import { UserPayload } from "src/auth/jwt.strategy";
 
 const createQuestionBodySchema = z.object({
     title: z.string(),
@@ -21,7 +23,7 @@ export class CreateQuestionController {
     @Post()
     @HttpCode(201)
     @UsePipes(new ZodValidationPipe(createQuestionBodySchema))
-    async handle(@Body() body: CreateQuestionBody) {
+    async handle(@CurrentUser() user: UserPayload) {
         
 
     }
