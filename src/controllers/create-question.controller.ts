@@ -13,6 +13,8 @@ const createQuestionBodySchema = z.object({
     content: z.string(),
 });
 
+const bodyValidationPipe = new ZodValidationPipe(createQuestionBodySchema);
+
 type CreateQuestionBody = z.infer<typeof createQuestionBodySchema>;
 
 @Controller('/questions')
@@ -22,10 +24,31 @@ export class CreateQuestionController {
 
     @Post()
     @HttpCode(201)
-    @UsePipes(new ZodValidationPipe(createQuestionBodySchema))
-    async handle(@CurrentUser() user: UserPayload) {
-        
+    async handle(
+        @CurrentUser() user: UserPayload,
+        @Body(bodyValidationPipe) body: CreateQuestionBody
+    ) {
+        const { title, content } = body;
+        const userId = user.sub;
 
+        const slug = this.convertToSlug(title);
+
+        await this.prisma.questions.create({
+            data: {
+                title,
+                content,
+                authorId: userId,
+                slug,
+            },
+        });
+    }
+
+    private convertToSlug(title: string): string {
+        return title
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
     }
 }
-
