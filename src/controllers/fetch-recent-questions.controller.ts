@@ -23,21 +23,27 @@ export class FetchRecentQuestionsController {
         const perPage = query.size;
         const skip = (query.page - 1) * perPage;
 
-        const questions = await this.prisma.questions.findMany({
-            take: perPage,
-            skip,
-            orderBy: {
-                createdAt: 'desc',
-            },
-            include: {
-                author: {
-                    select: {
-                        name: true,
+        const [questions, total] = await Promise.all([
+            this.prisma.questions.findMany({
+                take: perPage,
+                skip,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                include: {
+                    author: {
+                        select: {
+                            name: true,
+                        },
                     },
                 },
-            },
-        });
+            }),
+            this.prisma.questions.count(),
+        ]);
 
-        return { questions };
+        return { 
+            questions,
+            total
+        };
     }
 }
