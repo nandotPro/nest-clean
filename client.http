@@ -37,3 +37,9 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+# @name fetchRecentQuestions
+GET {{baseUrl}}/questions?page=1&size=10
+Authorization: Bearer {{authToken}}
+
+###
+
