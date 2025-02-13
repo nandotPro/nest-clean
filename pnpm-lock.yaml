@@ -32,6 +32,9 @@ importers:
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       passport-jwt:
         specifier: ^4.0.1
         version: 4.0.1
@@ -48,6 +51,9 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0(zod@3.24.2)
     devDependencies:
+      '@faker-js/faker':
+        specifier: ^9.5.0
+        version: 9.5.0
       '@nestjs/cli':
         specifier: ^11.0.0
         version: 11.0.2(@swc/cli@0.6.0(@swc/core@1.10.14)(chokidar@4.0.3))(@swc/core@1.10.14)(@types/node@22.13.1)
@@ -334,6 +340,10 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@faker-js/faker@9.5.0':
+    resolution: {integrity: sha512-3qbjLv+fzuuCg3umxc9/7YjrEXNaKwHgmig949nfyaTx8eL4FAsvFbu+1JcFUj1YAXofhaDn6JdEUBTYuk0Ssw==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@inquirer/checkbox@4.1.1':
     resolution: {integrity: sha512-os5kFd/52gZTl/W6xqMfhaKVJHQM8V/U1P8jcSaQJ/C4Qhdrf2jEXdA/HaxfQs9iiUA/0yzYhk5d3oRHTxGDDQ==}
@@ -1482,6 +1492,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -3155,6 +3168,8 @@ snapshots:
   '@esbuild/win32-x64@0.24.2':
     optional: true
 
+  '@faker-js/faker@9.5.0': {}
+
   '@inquirer/checkbox@4.1.1(@types/node@22.13.1)':
     dependencies:
       '@inquirer/core': 10.1.6(@types/node@22.13.1)
@@ -4310,6 +4325,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  dayjs@1.11.13: {}
 
   debug@2.6.9:
     dependencies:
