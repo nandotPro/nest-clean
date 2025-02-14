@@ -7,13 +7,18 @@ import { PrismaQuestionAttachmentsRepository } from "./prisma/repositories/prism
 import { PrismaQuestionsRepository } from "./prisma/repositories/prisma-questions-repository";
 import { PrismaAnswerAttachmentsRepository } from "./prisma/repositories/prisma-answer-attachments-repository";
 import { QuestionsRepository } from "@/domain/forum/application/repositories/questions-repository";
-
+import { StudentsRepository } from "@/domain/forum/application/repositories/students-repository";
+import { PrismaStudentsRepository } from "./prisma/repositories/prisma-students-repository";
 @Module({
     providers: [
         PrismaService, 
         {
             provide: QuestionsRepository,
             useClass: PrismaQuestionsRepository,
+        },
+        {
+            provide: StudentsRepository,
+            useClass: PrismaStudentsRepository,
         },
         PrismaAnswersRepository, 
         PrismaAnswerAttachmentsRepository, 
@@ -22,11 +27,12 @@ import { QuestionsRepository } from "@/domain/forum/application/repositories/que
         PrismaQuestionCommentsRepository,
     ],
     exports: [
+        QuestionsRepository, 
+        StudentsRepository,
         PrismaService,
         PrismaAnswersRepository, 
         PrismaAnswerAttachmentsRepository, 
         PrismaAnswerCommentsRepository, 
-        QuestionsRepository, 
         PrismaQuestionAttachmentsRepository, 
         PrismaQuestionCommentsRepository,
     ],
