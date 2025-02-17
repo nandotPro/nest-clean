@@ -21,6 +21,7 @@ model User {
 
   questions Questions[]
   answers   Answers[]
+  comments  Comments[]
 
   @@map("users")
 }
@@ -35,9 +36,11 @@ model Questions {
   authorId     String    @map("author_id")
   bestAnswerId String?   @unique @map("best_answer_id")
 
-  author     User      @relation(fields: [authorId], references: [id])
-  bestAnswer Answers?  @relation("bestAnswer", fields: [bestAnswerId], references: [id])
-  answers    Answers[]
+  author      User          @relation(fields: [authorId], references: [id])
+  bestAnswer  Answers?      @relation("bestAnswer", fields: [bestAnswerId], references: [id])
+  answers     Answers[]
+  comments    Comments[]
+  attachments Attachments[]
 
   @@map("questions")
 }
@@ -50,9 +53,40 @@ model Answers {
   authorId    String    @map("author_id")
   questionsId String    @map("questions_id")
 
-  author       User       @relation(fields: [authorId], references: [id])
-  bestAnswerOn Questions? @relation("bestAnswer")
-  questions    Questions  @relation(fields: [questionsId], references: [id])
+  author       User          @relation(fields: [authorId], references: [id])
+  bestAnswerOn Questions?    @relation("bestAnswer")
+  questions    Questions     @relation(fields: [questionsId], references: [id])
+  comments     Comments[]
+  attachments  Attachments[]
 
   @@map("answers")
+}
+
+model Comments {
+  id          String    @id @default(uuid())
+  content     String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+  authorId    String    @map("author_id")
+  questionsId String?   @map("questions_id")
+  answersId   String?   @map("answers_id")
+
+  author   User       @relation(fields: [authorId], references: [id])
+  question Questions? @relation(fields: [questionsId], references: [id])
+  answer   Answers?   @relation(fields: [answersId], references: [id])
+
+  @@map("comments")
+}
+
+model Attachments {
+  id          String  @id @default(uuid())
+  title       String
+  url         String
+  questionsId String? @map("questions_id")
+  answersId   String? @map("answers_id")
+
+  question Questions? @relation(fields: [questionsId], references: [id])
+  answer   Answers?   @relation(fields: [answersId], references: [id])
+
+  @@map("attachments")
 }
