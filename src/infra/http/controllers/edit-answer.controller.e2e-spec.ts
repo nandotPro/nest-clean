@@ -6,6 +6,8 @@ import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { AnswerFactory } from "test/factories/make-answer";
+import { AnswerAttachmentFactory } from "test/factories/make-answer-attachment";
+import { AttachmentFactory } from "test/factories/make-attachment";
 import { QuestionFactory } from "test/factories/make-question";
 import { StudentFactory } from "test/factories/make-student";
 
@@ -15,12 +17,14 @@ describe('Edit Answer (E2E)', () => {
     let studentFactory: StudentFactory;
     let questionFactory: QuestionFactory;
     let answerFactory: AnswerFactory;
+    let answerAttachmentFactory: AnswerAttachmentFactory;
+    let attachmentFactory: AttachmentFactory;
     let jwt: JwtService;
     
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             imports: [AppModule, DatabaseModule],
-            providers: [StudentFactory, QuestionFactory, AnswerFactory],
+            providers: [StudentFactory, QuestionFactory, AnswerFactory, AnswerAttachmentFactory, AttachmentFactory],
         }).compile();
 
         app = moduleRef.createNestApplication();
@@ -29,6 +33,8 @@ describe('Edit Answer (E2E)', () => {
         studentFactory = moduleRef.get(StudentFactory);
         questionFactory = moduleRef.get(QuestionFactory);
         answerFactory = moduleRef.get(AnswerFactory);
+        answerAttachmentFactory = moduleRef.get(AnswerAttachmentFactory);
+        attachmentFactory = moduleRef.get(AttachmentFactory);
         jwt = moduleRef.get(JwtService);
 
         await app.init();
@@ -45,6 +51,19 @@ describe('Edit Answer (E2E)', () => {
             questionId: question.id,
         });
 
+        const attachment1 = await attachmentFactory.makePrismaAttachment();
+        const attachment2 = await attachmentFactory.makePrismaAttachment();
+
+        await answerAttachmentFactory.makePrismaAnswerAttachment({
+            answerId: answer.id,
+            attachmentId: attachment1.id,
+        }); 
+
+        await answerAttachmentFactory.makePrismaAnswerAttachment({
+            answerId: answer.id,
+            attachmentId: attachment2.id,
+        });
+
         const answerId = answer.id.toString();
         const accessToken = jwt.sign({ sub: user.id.toString() });
 
@@ -53,6 +72,7 @@ describe('Edit Answer (E2E)', () => {
             .set('Authorization', `Bearer ${accessToken}`)
             .send({
                 content: 'Resposta editada',
+                attachments: [attachment1.id, attachment2.id]
             });
 
         expect(response.status).toBe(204);
@@ -64,6 +84,14 @@ describe('Edit Answer (E2E)', () => {
         });
 
         expect(answerOnDatabase).toBeTruthy();
+
+        const attachmentsOnDatabase = await prisma.attachments.findMany({
+            where: {
+                answersId: answerOnDatabase?.id
+            }
+        });
+
+        expect(attachmentsOnDatabase).toHaveLength(2);
     });
 
     test('[PUT] /answers/:id - Should not be able to edit answer from another user', async () => {
