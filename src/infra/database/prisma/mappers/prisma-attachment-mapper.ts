@@ -1,9 +1,19 @@
-import { Attachments as PrismaAttachment } from "@prisma/client";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Attachment } from "@/domain/forum/enterprise/entities/attachment";
-import { Prisma } from "@prisma/client";
+import { Attachments as PrismaAttachment } from "@prisma/client";
 
 export class PrismaAttachmentMapper {
-    static toPrisma(attachment: Attachment): Prisma.AttachmentsUncheckedCreateInput  {
+    static toDomain(raw: PrismaAttachment): Attachment {
+        return Attachment.create(
+            {
+                title: raw.title,
+                link: raw.url,
+            },
+            new UniqueEntityID(raw.id)
+        );
+    }
+
+    static toPrisma(attachment: Attachment): PrismaAttachment {
         return {
             id: attachment.id.toString(),
             title: attachment.title,
@@ -11,5 +21,5 @@ export class PrismaAttachmentMapper {
             questionsId: null,
             answersId: null,
         };
-    }       
+    }
 }
