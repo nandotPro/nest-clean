@@ -14,9 +14,9 @@ export class PrismaQuestionAttachmentMapper {
         }, new UniqueEntityID(raw.id));
     }
 
-    static toPrismaUpdateMany(attachments: QuestionAttachment[]): Prisma.AttachmentsUpdateManyArgs[] {
+    static toPrismaUpdateMany(attachments: QuestionAttachment[]): Prisma.AttachmentsUpdateManyArgs {
         const attachmentIds = attachments.map((attachment) => {
-            return attachment.id.toString();
+            return attachment.attachmentId.toString();
         });
 
         return {
