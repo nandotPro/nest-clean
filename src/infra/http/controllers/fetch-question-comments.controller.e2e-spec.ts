@@ -32,7 +32,9 @@ describe('Fetch Question Comments (E2E)', () => {
     });
 
     test('[GET] /questions/:questionId/comments', async () => {
-        const user = await studentFactory.makePrismaStudent();
+        const user = await studentFactory.makePrismaStudent({
+            name: 'John Doe',
+        });
         const question = await questionFactory.makePrismaQuestion({
             authorId: user.id,
         });
@@ -62,8 +64,8 @@ describe('Fetch Question Comments (E2E)', () => {
         expect(response.status).toBe(200);
         expect(response.body).toEqual({
             comments: expect.arrayContaining([
-                expect.objectContaining({ content: 'Comment 01' }),
-                expect.objectContaining({ content: 'Comment 02' }),
+                expect.objectContaining({ content: 'Comment 01', author: 'John Doe' }),
+                expect.objectContaining({ content: 'Comment 02', author: 'John Doe' }),
             ]),
         });
     });
