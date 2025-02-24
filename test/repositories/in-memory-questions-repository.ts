@@ -1,13 +1,20 @@
 import { PaginationParams } from "@/core/repositories/pagination-params";
 import { QuestionsRepository } from "../../src/domain/forum/application/repositories/questions-repository";
 import { Question } from "../../src/domain/forum/enterprise/entities/question";
-import { QuestionAttachmentsRepository } from "@/domain/forum/application/repositories/question-attachments-repository";
 import { DomainEvents } from "@/core/events/domain-events";
+import { QuestionDetails } from "@/domain/forum/enterprise/entities/value-objects/question.details";
+import { InMemoryStudentsRepository } from "./in-memory-students-repository";
+import { InMemoryAttachmentsRepository } from "./in-memory-attachments-repository";
+import { InMemoryQuestionAttachmentsRepository } from "./in-memory-question-attachments-repository";
 
 export class InMemoryQuestionsRepository implements QuestionsRepository {
     public questions: Question[] = [];
 
-    constructor(private questionAttachmentsRepository: QuestionAttachmentsRepository) {}
+    constructor(
+        private questionAttachmentsRepository: InMemoryQuestionAttachmentsRepository,
+        private studentsRepository: InMemoryStudentsRepository,
+        private attachmentsRepository: InMemoryAttachmentsRepository,
+    ) {}
 
     async create(question: Question): Promise<void> {
         this.questions.push(question);
@@ -26,6 +33,47 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
         }
 
         return question;
+    }
+
+    async findDetailsBySlug(slug: string): Promise<QuestionDetails | null> {
+        const question = this.questions.find(question => question.slug.value === slug);
+
+        if (!question) {
+            return null;
+        }
+
+        const author = this.studentsRepository.students.find(student => student.id.equals(question.authorId));
+
+        if (!author) {
+            throw new Error("Author not found.");
+        }
+
+        const questionAttachments = this.questionAttachmentsRepository.attachments.filter(attachment => attachment.questionId.equals(question.id));
+
+        const attachments = questionAttachments.map(attachment => {
+            const file = this.attachmentsRepository.items.find(attachment => {
+                return attachment.id.equals(attachment.id);
+            });
+
+            if (!file) {
+                throw new Error("File not found.");
+            }
+
+            return attachments;
+        });
+
+        return QuestionDetails.create({
+            questionId: question.id,
+            authorId: question.authorId,
+            title: question.title,
+            content: question.content,
+            slug: question.slug.value,
+            attachments,
+            bestAnswerId: question.bestAnswerId ?? null,
+            createdAt: question.createdAt,
+            updatedAt: question.updatedAt,
+            author: author.name,
+        });
     }
 
     async findById(id: string): Promise<Question | null> {
