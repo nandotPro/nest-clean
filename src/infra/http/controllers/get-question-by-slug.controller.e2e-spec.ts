@@ -7,12 +7,16 @@ import { StudentFactory } from "test/factories/make-student";
 import { QuestionFactory } from "test/factories/make-question";
 import { DatabaseModule } from "@/infra/database/database.module";
 import { Slug } from "@/domain/forum/enterprise/entities/value-objects/slug";
+import { AttachmentFactory } from "test/factories/make-attachment";
+import { QuestionAttachmentFactory } from "test/factories/make-question-attachments";
 
 describe('Get Question By Slug (E2E)', () => {
     let app: INestApplication;
     let studentFactory: StudentFactory;
     let jwt: JwtService;
     let questionFactory: QuestionFactory;
+    let attachmentFactory: AttachmentFactory;
+    let questionAttachmentFactory: QuestionAttachmentFactory;
 
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
@@ -25,6 +29,9 @@ describe('Get Question By Slug (E2E)', () => {
         jwt = moduleRef.get(JwtService);
         studentFactory = moduleRef.get(StudentFactory);
         questionFactory = moduleRef.get(QuestionFactory);
+        attachmentFactory = moduleRef.get(AttachmentFactory);
+        questionAttachmentFactory = moduleRef.get(QuestionAttachmentFactory);
+
 
         await app.init();
     });
@@ -34,11 +41,20 @@ describe('Get Question By Slug (E2E)', () => {
 
         const accessToken = jwt.sign({ sub: user.id.toString() });
 
-        await questionFactory.makePrismaQuestion({
+        const question = await questionFactory.makePrismaQuestion({
             title: 'Question 01',
             slug: Slug.create('question-01'),
             content: 'Question content',
             authorId: user.id,
+        });
+
+        const attachment = await attachmentFactory.makePrismaAttachment({
+            title: 'Attachment 01',
+        });
+
+        await questionAttachmentFactory.makePrismaQuestionAttachment({
+            questionId: question.id,
+            attachmentId: attachment.id,
         });
 
         const response = await request(app.getHttpServer())
@@ -55,6 +71,9 @@ describe('Get Question By Slug (E2E)', () => {
                 slug: expect.any(String),
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
+                authorId: expect.any(String),
+                bestAnswerId: expect.any(String),
+                attachments: expect.any(Array),
             }),
         });
     });
