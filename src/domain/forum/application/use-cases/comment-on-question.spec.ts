@@ -4,17 +4,27 @@ import { CommentOnQuestionUseCase } from "./comment-on-question";
 import { Question } from "../../enterprise/entities/question";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { InMemoryQuestionAttachmentsRepository } from "test/repositories/in-memory-question-attachments-repository";
+import { InMemoryAttachmentsRepository } from "test/repositories/in-memory-attachments-repository";
+import { InMemoryStudentsRepository } from "test/repositories/in-memory-students-repository";
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository;
 let inMemoryQuestionsCommentsRepository: InMemoryQuestionsCommentsRepository;
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository;
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository;
+let inMemoryStudentsRepository: InMemoryStudentsRepository;
 let sut: CommentOnQuestionUseCase;
 
 describe("CommentOnQuestionUseCase", () => {
     beforeEach(() => {
         inMemoryQuestionAttachmentsRepository = new InMemoryQuestionAttachmentsRepository();
-        inMemoryQuestionsRepository = new InMemoryQuestionsRepository(inMemoryQuestionAttachmentsRepository);
-        inMemoryQuestionsCommentsRepository = new InMemoryQuestionsCommentsRepository();
+        inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository();
+        inMemoryStudentsRepository = new InMemoryStudentsRepository();
+        inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+            inMemoryQuestionAttachmentsRepository,
+            inMemoryStudentsRepository,
+            inMemoryAttachmentsRepository
+        );
+        inMemoryQuestionsCommentsRepository = new InMemoryQuestionsCommentsRepository(inMemoryStudentsRepository);
         sut = new CommentOnQuestionUseCase(inMemoryQuestionsRepository, inMemoryQuestionsCommentsRepository);
     });
 
