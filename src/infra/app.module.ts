@@ -4,8 +4,7 @@ import { envSchema } from '@/infra/env/env';
 import { AuthModule } from './auth/auth.module';
 import { HttpModule } from './http/http.module';
 import { EnvModule } from './env/env.module';
-import { StorageModule } from './storage/storage.module';
-
+import { EventsModule } from './events/events.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -15,7 +14,7 @@ import { StorageModule } from './storage/storage.module';
     AuthModule,
     HttpModule,
     EnvModule,
-    StorageModule,
+    EventsModule,
   ],
 })
 
