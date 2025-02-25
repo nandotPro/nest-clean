@@ -71,15 +71,15 @@ describe('Edit Answer (E2E)', () => {
             .put(`/answers/${answerId}`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send({
-                content: 'Resposta editada',
-                attachments: [attachment1.id, attachment2.id]
+                content: 'Conteúdo editado',
+                attachments: [attachment1.id.toString(), attachment2.id.toString()],
             });
 
         expect(response.status).toBe(204);
 
         const answerOnDatabase = await prisma.answers.findFirst({
             where: {
-                content: 'Resposta editada',
+                content: 'Conteúdo editado',
             },
         });
 

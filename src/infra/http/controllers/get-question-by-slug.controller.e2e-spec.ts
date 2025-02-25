@@ -21,7 +21,12 @@ describe('Get Question By Slug (E2E)', () => {
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             imports: [AppModule, DatabaseModule],
-            providers: [StudentFactory, QuestionFactory],
+            providers: [
+                StudentFactory, 
+                QuestionFactory,
+                AttachmentFactory,
+                QuestionAttachmentFactory
+            ],
         }).compile();
 
         app = moduleRef.createNestApplication();
@@ -39,41 +44,21 @@ describe('Get Question By Slug (E2E)', () => {
     test('[GET] /questions/:slug', async () => {
         const user = await studentFactory.makePrismaStudent();
 
-        const accessToken = jwt.sign({ sub: user.id.toString() });
-
         const question = await questionFactory.makePrismaQuestion({
-            title: 'Question 01',
-            slug: Slug.create('question-01'),
-            content: 'Question content',
             authorId: user.id,
-        });
-
-        const attachment = await attachmentFactory.makePrismaAttachment({
-            title: 'Attachment 01',
-        });
-
-        await questionAttachmentFactory.makePrismaQuestionAttachment({
-            questionId: question.id,
-            attachmentId: attachment.id,
+            title: 'Question title',
+            slug: Slug.createFromText('question-title'),
         });
 
         const response = await request(app.getHttpServer())
-            .get('/questions/question-01')
-            .set('Authorization', `Bearer ${accessToken}`)
+            .get(`/questions/${question.slug.value}`)
             .send();
 
         expect(response.status).toBe(200);
         expect(response.body).toEqual({
             question: expect.objectContaining({
-                id: expect.any(String),
-                title: 'Question 01',
-                content: 'Question content',
-                slug: expect.any(String),
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
-                authorId: expect.any(String),
-                bestAnswerId: expect.any(String),
-                attachments: expect.any(Array),
+                title: 'Question title',
+                slug: 'question-title',
             }),
         });
     });

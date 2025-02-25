@@ -76,8 +76,8 @@ describe('Create Question (E2E)', () => {
         });
 
         expect(attachmentsOnDatabase).toHaveLength(2);
-        expect(attachmentsOnDatabase[0].id).toEqual(attachment1.id);
-        expect(attachmentsOnDatabase[1].id).toEqual(attachment2.id);
+        expect(attachmentsOnDatabase[0].id).toEqual(attachment1.id.toString());
+        expect(attachmentsOnDatabase[1].id).toEqual(attachment2.id.toString());
     });
 
     test('[POST] /questions - Unauthorized', async () => {

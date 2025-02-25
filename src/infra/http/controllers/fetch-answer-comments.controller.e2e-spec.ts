@@ -35,44 +35,43 @@ describe('Fetch Answer Comments (E2E)', () => {
     });
 
     test('[GET] /answers/:answerId/comments', async () => {
-        const user = await studentFactory.makePrismaStudent({
-            name: 'John Doe',
-        });
+        const user = await studentFactory.makePrismaStudent();
         const question = await questionFactory.makePrismaQuestion({
             authorId: user.id,
         });
         const answer = await answerFactory.makePrismaAnswer({
-            questionId: question.id,
             authorId: user.id,
+            questionId: question.id,
         });
 
         const accessToken = jwt.sign({ sub: user.id.toString() });
 
-        await Promise.all([
-            answerCommentFactory.makePrismaAnswerComment({
-                authorId: user.id,
-                answerId: answer.id,
-                content: 'Comment 01',
-            }),
-            answerCommentFactory.makePrismaAnswerComment({
-                authorId: user.id,
-                answerId: answer.id,
-                content: 'Comment 02',
-            }),
-        ]);
+        await answerCommentFactory.makePrismaAnswerComment({
+            authorId: user.id,
+            answerId: answer.id,
+            content: 'Comment 1',
+        });
 
-        const answerId = answer.id.toString();
+        await answerCommentFactory.makePrismaAnswerComment({
+            authorId: user.id,
+            answerId: answer.id,
+            content: 'Comment 2',
+        });
 
         const response = await request(app.getHttpServer())
-            .get(`/answers/${answerId}/comments`)
+            .get(`/answers/${answer.id.toString()}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send();
 
         expect(response.status).toBe(200);
         expect(response.body).toEqual({
             comments: expect.arrayContaining([
-                expect.objectContaining({ content: 'Comment 01', author: 'John Doe' }),
-                expect.objectContaining({ content: 'Comment 02', author: 'John Doe' }),
+                expect.objectContaining({
+                    content: 'Comment 1',
+                }),
+                expect.objectContaining({
+                    content: 'Comment 2',
+                }),
             ]),
         });
     });

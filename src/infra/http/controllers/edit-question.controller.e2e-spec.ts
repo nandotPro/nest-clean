@@ -103,8 +103,8 @@ describe('Edit Question (E2E)', () => {
         });
 
         expect(attachmentsOnDatabase).toHaveLength(2);
-        expect(attachmentsOnDatabase[0].id).toEqual(attachment1.id);
-        expect(attachmentsOnDatabase[1].id).toEqual(attachment3.id);
+        expect(attachmentsOnDatabase[0].id).toEqual(attachment1.id.toString());
+        expect(attachmentsOnDatabase[1].id).toEqual(attachment3.id.toString());
     });
 
     test('[PUT] /questions/:id - Should not be able to edit question from another user', async () => {

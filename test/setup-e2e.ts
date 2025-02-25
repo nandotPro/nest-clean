@@ -30,6 +30,9 @@ beforeAll(async () => {
   DomainEvents.shouldRun = false;
 
   execSync('pnpm prisma migrate deploy')
+
+  // Adicionar configuração para ignorar erros SSL em desenvolvimento
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 })
 
 afterAll(async () => {

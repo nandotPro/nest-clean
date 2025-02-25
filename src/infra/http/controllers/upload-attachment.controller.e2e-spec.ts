@@ -16,7 +16,10 @@ describe('Upload Attachment (E2E)', () => {
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             imports: [AppModule, DatabaseModule],
-            providers: [StudentFactory],
+            providers: [
+                StudentFactory,
+                // Adicionar qualquer provider necessário para storage
+            ],
         }).compile();
 
         app = moduleRef.createNestApplication();
@@ -30,7 +33,6 @@ describe('Upload Attachment (E2E)', () => {
 
     test('[POST] /attachments', async () => {
         const user = await studentFactory.makePrismaStudent();
-
         const accessToken = jwt.sign({ sub: user.id.toString() });
 
         const response = await request(app.getHttpServer())

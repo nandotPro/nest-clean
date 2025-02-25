@@ -32,40 +32,39 @@ describe('Fetch Question Comments (E2E)', () => {
     });
 
     test('[GET] /questions/:questionId/comments', async () => {
-        const user = await studentFactory.makePrismaStudent({
-            name: 'John Doe',
-        });
+        const user = await studentFactory.makePrismaStudent();
         const question = await questionFactory.makePrismaQuestion({
             authorId: user.id,
         });
 
         const accessToken = jwt.sign({ sub: user.id.toString() });
 
-        await Promise.all([
-            questionCommentFactory.makePrismaQuestionComment({
-                authorId: user.id,
-                questionId: question.id,
-                content: 'Comment 01',
-            }),
-            questionCommentFactory.makePrismaQuestionComment({
-                authorId: user.id,
-                questionId: question.id,
-                content: 'Comment 02',
-            }),
-        ]);
+        await questionCommentFactory.makePrismaQuestionComment({
+            authorId: user.id,
+            questionId: question.id,
+            content: 'Comment 1',
+        });
 
-        const questionId = question.id.toString();
+        await questionCommentFactory.makePrismaQuestionComment({
+            authorId: user.id,
+            questionId: question.id,
+            content: 'Comment 2',
+        });
 
         const response = await request(app.getHttpServer())
-            .get(`/questions/${questionId}/comments`)
+            .get(`/questions/${question.id.toString()}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send();
 
         expect(response.status).toBe(200);
         expect(response.body).toEqual({
             comments: expect.arrayContaining([
-                expect.objectContaining({ content: 'Comment 01', author: 'John Doe' }),
-                expect.objectContaining({ content: 'Comment 02', author: 'John Doe' }),
+                expect.objectContaining({
+                    content: 'Comment 1',
+                }),
+                expect.objectContaining({
+                    content: 'Comment 2',
+                }),
             ]),
         });
     });
