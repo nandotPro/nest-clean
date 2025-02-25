@@ -19,7 +19,7 @@ describe("FetchAnswerCommentsUseCase", () => {
     it("should fetch answer comments", async () => {
         const student = makeStudent({ name: 'John Doe' });
 
-        inMemoryStudentsRepository.create(student);
+        await inMemoryStudentsRepository.create(student);
 
         await inMemoryAnswerCommentsRepository.create(makeAnswerComment({
             answerId: new UniqueEntityID("1"),
@@ -41,9 +41,13 @@ describe("FetchAnswerCommentsUseCase", () => {
     });
 
     it("should fetch paginated answer comments", async () => {
+        const student = makeStudent({ name: 'John Doe' });
+        await inMemoryStudentsRepository.create(student);
+
         for (let i = 1; i <= 22; i++) {
             await inMemoryAnswerCommentsRepository.create(makeAnswerComment({
                 answerId: new UniqueEntityID("1"),
+                authorId: student.id,
             }));
         }
 

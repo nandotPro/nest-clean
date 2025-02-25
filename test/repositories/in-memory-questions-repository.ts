@@ -45,34 +45,36 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
         const author = this.studentsRepository.students.find(student => student.id.equals(question.authorId));
 
         if (!author) {
-            throw new Error("Author not found.");
+            throw new Error(`Author with ID ${question.authorId.toString()} not found`);
         }
 
-        const questionAttachments = this.questionAttachmentsRepository.attachments.filter(attachment => attachment.questionId.equals(question.id));
+        const questionAttachments = this.questionAttachmentsRepository.attachments.filter(
+            attachment => attachment.questionId.equals(question.id)
+        );
 
-        const attachments = questionAttachments.map(attachment => {
-            const file = this.attachmentsRepository.items.find(attachment => {
-                return attachment.id.equals(attachment.id);
-            });
+        const attachments = questionAttachments.map(questionAttachment => {
+            const file = this.attachmentsRepository.items.find(file => 
+                file.id.equals(questionAttachment.attachmentId)
+            );
 
             if (!file) {
-                throw new Error("File not found.");
+                throw new Error(`Attachment with ID ${questionAttachment.attachmentId.toString()} not found`);
             }
 
-            return attachments;
+            return file;
         });
 
         return QuestionDetails.create({
             questionId: question.id,
             authorId: question.authorId,
+            author: author.name,
             title: question.title,
-            content: question.content,
             slug: question.slug.value,
-            attachments,
+            content: question.content,
             bestAnswerId: question.bestAnswerId ?? null,
+            attachments,
             createdAt: question.createdAt,
             updatedAt: question.updatedAt,
-            author: author.name,
         });
     }
 

@@ -16,24 +16,32 @@ interface QuestionDetailsProps {
 }
 
 export class QuestionDetails extends ValueObject<QuestionDetailsProps> {
-    get authorId() {
-        return this.props.authorId;
+    static create(props: QuestionDetailsProps) {
+        return new QuestionDetails(props);
     }
 
     get questionId() {
         return this.props.questionId;
     }
 
+    get authorId() {
+        return this.props.authorId;
+    }
+
+    get author() {
+        return this.props.author;
+    }
+
     get title() {
         return this.props.title;
     }
 
-    get content() {
-        return this.props.content;
-    }
-
     get slug() {
         return this.props.slug;
+    }
+
+    get content() {
+        return this.props.content;
     }
 
     get attachments() {
@@ -51,8 +59,4 @@ export class QuestionDetails extends ValueObject<QuestionDetailsProps> {
     get updatedAt() {
         return this.props.updatedAt;
     }
-
-    static create(props: QuestionDetailsProps) {
-        return new QuestionDetails(props);
-    }   
 }   

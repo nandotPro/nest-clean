@@ -37,7 +37,9 @@ describe("GetQuestionBySlugUseCase", () => {
 
         const newQuestion = makeQuestion({
             authorId: newStudent.id,
-            slug: Slug.create("example-question")
+            slug: Slug.create("example-question"),
+            title: "Example question",
+            content: "Example content"
         });
 
         await inMemoryQuestionsRepository.create(newQuestion);
@@ -59,16 +61,15 @@ describe("GetQuestionBySlugUseCase", () => {
             slug: "example-question"
         });
 
-        expect(result.value).toMatchObject({
-            question: expect.objectContaining({
-                title: newQuestion.title,
-                author: expect.any(String),
-                attachments: [
-                    expect.objectContaining({
-                        title: attachment.title
-                    })
-                ]
-            }),
-        });
+        expect(result.isRight()).toBe(true);
+        
+        if (result.isRight()) {
+            expect(result.value.question.title).toEqual("Example question");
+            expect(result.value.question.content).toEqual("Example content");
+            expect(result.value.question.slug).toEqual("example-question");
+            expect(result.value.question.author).toEqual("John Doe");
+            expect(result.value.question.attachments).toHaveLength(1);
+            expect(result.value.question.attachments[0].title).toEqual("Some attachment");
+        }
     });
 });
